@@ -6,7 +6,7 @@
     <div wire:ignore 
          id="global-map" 
          x-ref="mapContainer"
-         style="height: 600px; width: 100%; border-radius: 8px;">
+         style="height: 600px; width: 100%; border-radius: 8px; border: 1px solid #ddd;">
     </div>
 
     <script>
@@ -14,14 +14,27 @@
             return {
                 map: null,
                 markerGroup: null,
+                // Usiamo i valori passati dal componente Livewire
+                zoom: @js($zoom),
+                center: @js($center),
 
                 init() {
-                    this.map = L.map(this.$refs.mapContainer).setView([41.9, 12.5], 6);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+                    // Inizializziamo la mappa usando le coordinate della config
+                    this.map = L.map(this.$refs.mapContainer).setView(
+                        [this.center.lat, this.center.lng], 
+                        this.zoom
+                    );
+
+                    L.tileLayer(@js(config('geoservice.map.tile_layer', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'))).addTo(this.map);
                     this.markerGroup = L.layerGroup().addTo(this.map);
+
+                    // Risolve problemi di rendering se la mappa è in un tab o div nascosto all'inizio
+                    setTimeout(() => { this.map.invalidateSize(); }, 500);
                 },
 
                 updateMarkers(data) {
+                    if (!this.map) return;
+                    
                     this.markerGroup.clearLayers();
                     let bounds = [];
 
@@ -30,7 +43,7 @@
                             iconUrl: loc.icon_url,
                             iconSize: data.config.size,
                             iconAnchor: data.config.anchor,
-                            popupAnchor: data.config.popupAnchor || [0, -34]
+                            popupAnchor: data.config.popupAnchor || [0, -32]
                         });
 
                         let marker = L.marker([loc.lat, loc.lng], { icon: icon })
@@ -40,18 +53,17 @@
                         bounds.push([loc.lat, loc.lng]);
                     });
 
-                    //if (bounds.length > 0) {
-                    //    this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-                    //}
-                    if (bounds.length > 0) {
-                        this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+                    // Gestione intelligente della visuale
+                    if (bounds.length > 1) {
+                        // Più utenti: inquadrali tutti
+                        this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: this.zoom });
+                    } else if (bounds.length === 1) {
+                        // Un solo utente: centra su di lui con lo zoom di default
+                        this.map.setView(bounds[0], this.zoom);
                     } else {
-                        // Se non ci sono punti, torna alla vista predefinita (Italia/Venezia)
-                        this.map.setView([41.9, 12.5], 6);
+                        // Nessun utente: torna al centro predefinito dalla config
+                        this.map.setView([this.center.lat, this.center.lng], this.zoom);
                     }
-                    setTimeout(() => { this.map.invalidateSize(); }, 250);
-
-                    
                 }
             }
         }

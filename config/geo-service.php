@@ -26,4 +26,18 @@ return [
     ],
 
     'refresh_interval' => '10s', // Esempio: aggiorna ogni 10 secondi
+    'tracker' => [
+        'default_zoom' => 15,
+        'min_zoom' => 2,
+        'max_zoom' => 20,
+        // Altre impostazioni...
+    ],
+    'map' => [
+        'default_zoom' => 17, // Zoom più largo per vedere più utenti contemporaneamente
+        'center' => [
+            'lat' => 45.4338, // Venice come fallback
+            'lng' => 12.3286,
+        ],
+        'tile_layer' => 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    ]
 ];

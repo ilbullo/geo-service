@@ -11,11 +11,17 @@ class GeoMap extends Component
     public $models = [];
     public $refreshInterval; 
 
+    public $zoom;
+    public $center;
+
     public function mount($models = [])
     {
         $this->models = $models;
         // Recupera il valore dal config, con un fallback di sicurezza
         $this->refreshInterval = config('geoservice.refresh_interval', '30s');
+
+        $this->zoom = config('geoservice.map.default_zoom', 14);
+        $this->center = config('geoservice.map.center');
     }
 
     /**

@@ -13,13 +13,19 @@ class GeoTracker extends Component
     public $lat;
     public $lng;
 
+    public $showMap = true; // Default a true per mostrare la mappa
+    public $zoom; // Aggiungiamo questa proprietà
+
     /**
      * Il metodo mount accetta il modello dall'esterno
      */
-    public function mount($model = null)
+    public function mount($model = null,$showMap = true)
     {
         // Se non viene passato nulla, proviamo l'utente loggato (opzionale)
         $this->model = $model ?? Auth::user();
+        $this->showMap = $showMap;
+
+        $this->zoom = config('geoservice.tracker.default_zoom', 13);
 
         // Carichiamo le coordinate esistenti se presenti
         if ($this->model && method_exists($this->model, 'location')) {
