@@ -67,7 +67,7 @@ HTML
 
     @livewire('geo-tracker')
     
-    @livewire('geo-tracker', ['model' => $gondola])
+    @livewire('geo-tracker', ['model' => $veicolo])
 
 * * *
 
@@ -224,7 +224,7 @@ HTML
 
     @livewire('geo-tracker')
     
-    @livewire('geo-tracker', ['model' => $gondola])
+    @livewire('geo-tracker', ['model' => $vehicle])
 
 * * *
 
