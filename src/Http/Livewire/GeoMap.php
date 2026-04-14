@@ -41,6 +41,6 @@ class GeoMap extends Component
 
     public function render()
     {
-        return view('geo-service::livewire.geo-map');
+        return view('geoservice::livewire.geo-map');
     }
 }
