@@ -25,7 +25,7 @@ class GeoTracker extends Component
         $this->model = $model ?? Auth::user();
         $this->showMap = $showMap;
 
-        $this->zoom = config('geoservice.tracker.default_zoom', 13);
+        $this->zoom = config('geo-service.tracker.default_zoom', 13);
 
         // Carichiamo le coordinate esistenti se presenti
         if ($this->model && method_exists($this->model, 'location')) {
@@ -51,8 +51,8 @@ class GeoTracker extends Component
     public function render()
     {
         // Recuperiamo l'icona specifica per questo modello o quella di default
-        $icons = config('geoservice.icons', []);
-        $defaultIcon = config('geoservice.default_icon');
+        $icons = config('geo-service.icons', []);
+        $defaultIcon = config('geo-service.default_icon');
         
         // Cerchiamo se il modello attuale ha un'icona dedicata
         $modelClass = get_class($this->model);

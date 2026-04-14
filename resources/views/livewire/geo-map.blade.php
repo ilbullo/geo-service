@@ -25,7 +25,7 @@
                         this.zoom
                     );
 
-                    L.tileLayer(@js(config('geoservice.map.tile_layer', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'))).addTo(this.map);
+                    L.tileLayer(@js(config('geo-service.map.tile_layer', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'))).addTo(this.map);
                     this.markerGroup = L.layerGroup().addTo(this.map);
 
                     // Risolve problemi di rendering se la mappa è in un tab o div nascosto all'inizio

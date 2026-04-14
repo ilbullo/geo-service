@@ -11,7 +11,7 @@ class GeoServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/geo-service.php', 'geoservice');
+        $this->mergeConfigFrom(__DIR__.'/../config/geo-service.php', 'geo-service');
     }
 
     public function boot(): void

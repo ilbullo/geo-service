@@ -25,8 +25,8 @@ class MapService
             });
         }
 
-        $iconsConfig = config('geoservice.icons', []);
-        $defaultIconUrl = config('geoservice.default_icon.url');
+        $iconsConfig = config('geo-service.icons', []);
+        $defaultIconUrl = config('geo-service.default_icon.url');
 
         return $query->get()->map(function($loc) use ($iconsConfig, $defaultIconUrl) {
             $model = $loc->geolocatable;

@@ -18,10 +18,10 @@ class GeoMap extends Component
     {
         $this->models = $models;
         // Recupera il valore dal config, con un fallback di sicurezza
-        $this->refreshInterval = config('geoservice.refresh_interval', '30s');
+        $this->refreshInterval = config('geo-service.refresh_interval', '30s');
 
-        $this->zoom = config('geoservice.map.default_zoom', 14);
-        $this->center = config('geoservice.map.center');
+        $this->zoom = config('geo-service.map.default_zoom', 14);
+        $this->center = config('geo-service.map.center');
     }
 
     /**
@@ -35,12 +35,12 @@ class GeoMap extends Component
 
         $this->dispatch('map-updated', [
             'locations' => $markers,
-            'config'    => config('geoservice.default_icon')
+            'config'    => config('geo-service.default_icon')
         ]);
     }
 
     public function render()
     {
-        return view('geoservice::livewire.geo-map');
+        return view('geo-service::livewire.geo-map');
     }
 }
