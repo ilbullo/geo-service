@@ -1,128 +1,79 @@
-# GeoService Package
+## 🇮🇹 Italiano - Guida Rapida
 
-**GeoService** è un package Laravel per la geolocalizzazione polimorfica avanzata. Permette di tracciare e visualizzare su mappa qualsiasi modello Eloquent (Utenti, Veicoli, Asset) con icone personalizzate e aggiornamenti in tempo reale.
+### 1\. Requisiti Frontend
 
-* * *
+# 
 
-## 🇮🇹 Italiano
+Assicurati di avere Leaflet.js incluso nel tuo file `app.blade.php` (o nel layout dove userai la mappa):
 
-### 🚀 Caratteristiche
+HTML
 
--   **Polimorfismo Nativo**: Collega posizioni GPS a qualsiasi entità del database.
-    
--   **Icone Marker Dinamiche**: Configura icone diverse per ogni tipo di modello o per singole istanze.
-    
--   **Popup Personalizzabili**: Ogni modello definisce il proprio HTML per i popup della mappa.
-    
--   **Real-time Monitoring**: Supporto al polling automatico gestito da configurazione.
-    
--   **Architettura SOLID**: Utilizzo di DTO, Service e Contract per una manutenibilità superiore.
-    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-### 🛠 Installazione
+### 2\. Configurazione (`config/geo-service.php`)
 
-1.  **Aggiungi il repository** nel `composer.json` del tuo progetto:
-    
-    JSON
-    
-        "repositories": [{ "type": "path", "url": "packages/ilbullo/geo-service" }]
-    
-2.  **Installa**: `composer require ilbullo/geo-service`
-    
-3.  **Pubblica i file**: `php artisan vendor:publish --tag=geoservice-config`
-    
-4.  **Migra il DB**: `php artisan migrate`
-    
+# 
 
-### ⚙️ Configurazione Icone e Marker
-
-Dopo la pubblicazione, troverai il file `config/geo-service.php`. Qui puoi gestire il comportamento visivo del package:
+Dopo aver pubblicato la config, assicurati di definire le icone:
 
 PHP
 
     return [
-        // Intervallo di aggiornamento automatico della mappa (es: '5s', '10s', '1m')
-        'refresh_interval' => '10s',
-    
-        // Icona predefinita se non specificata
+        'refresh_interval' => '10s', // Tempo di polling
         'default_icon' => [
-            'url' => '/images/markers/default.png',
+            'url' => 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
             'size' => [32, 32],
             'anchor' => [16, 32],
         ],
-    
-        // Mapping icone per tipo di modello
         'icons' => [
-            \App\Models\User::class => '/images/markers/user.png',
-            \App\Models\Vehicle::class => '/images/markers/truck.png',
+            \App\Models\User::class => '/images/user-icon.png',
         ],
     ];
 
-### 📖 Utilizzo
+### 3\. Utilizzo dei Componenti
 
-#### 1\. Implementazione nel Modello
+#### A. Il Tracker (Per inviare la posizione)
 
-Usa i Trait e implementa l'interfaccia `GeolocatablePopup`:
+# 
 
-PHP
-
-    use IlBullo\GeoService\Traits\HasGeolocation;
-    use IlBullo\GeoService\Traits\HasGeolocatablePopup;
-    use IlBullo\GeoService\Contracts\GeolocatablePopup;
-    
-    class Vehicle extends Model implements GeolocatablePopup {
-        use HasGeolocation, HasGeolocatablePopup;
-    
-        public function toMapPopup(): string {
-            return "<b>Mezzo:</b> {$this->plate_number}";
-        }
-    
-        // Opzionale: Sovrascrivi l'icona solo per questa specifica istanza
-        public function getMapIcon(): ?string {
-            return $this->is_active ? '/icons/moving.png' : '/icons/stopped.png';
-        }
-    }
-
-#### 2\. Visualizzazione Mappa
-
-Inserisci il componente Livewire passando la collezione di modelli da mostrare:
+Inserisci questo componente per permettere a un utente o a un mezzo di inviare le coordinate GPS:
 
 HTML
 
-    @livewire('geo-map', ['models' => $vehicles])
+    @livewire('geo-tracker', ['model' => Auth::user()])
+
+_Il componente richiederà i permessi di geolocalizzazione al browser e aggiornerà la tabella `locations`._
+
+#### B. La Mappa (Per monitorare la flotta)
+
+# 
+
+Visualizza tutti i tuoi modelli geolocalizzati in tempo reale:
+
+HTML
+
+    @livewire('geo-map', ['models' => \App\Models\User::all()])
 
 * * *
 
-## 🇺🇸 English
+## 🇺🇸 English - Quick Start
 
-### 🚀 Features
+### 1\. Frontend Requirements
 
--   **Native Polymorphism**: Link GPS positions to any database entity.
-    
--   **Dynamic Marker Icons**: Configure different icons per model type or per specific instance.
-    
--   **Customizable Popups**: Each model defines its own HTML for map popups.
-    
--   **Real-time Monitoring**: Automatic polling support managed via configuration.
-    
--   **SOLID Architecture**: Uses DTOs, Services, and Contracts for top-tier maintainability.
-    
+# 
 
-### ⚙️ Icon & Marker Configuration
+You must include Leaflet.js assets in your main layout:
 
-In `config/geo-service.php`, you can define how markers appear:
+HTML
 
--   **`refresh_interval`**: How often the map updates automatically.
-    
--   **`icons`**: A mapping array where keys are Model classes and values are icon URLs.
-    
--   **`getMapIcon()`**: A method in your Model that can override global settings for granular control.
-    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-### 📖 Quick Start
+### 2\. The Components
 
-1.  Add `HasGeolocation` and `HasGeolocatablePopup` traits to your Model.
+# 
+
+-   **GeoTracker**: Sends GPS data from the client to the server for a specific model.
     
-2.  Implement `toMapPopup()` to define the marker content.
-    
-3.  Place `@livewire('geo-map', ['models' => $items])` in your blade view.
+-   **GeoMap**: Displays markers on a map with auto-refresh (polling) based on your config.
