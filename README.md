@@ -1,63 +1,92 @@
-  GeoService Documentation  body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; } @media (max-width: 767px) { .markdown-body { padding: 15px; } } .badge { display: flex; gap: 10px; margin-bottom: 20px; }
-
 GeoService Package
 ==================
 
-![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=for-the-badge&logo=laravel) ![Livewire](https://img.shields.io/badge/Livewire-3.x-FB70A9?style=for-the-badge&logo=livewire)
-
-**GeoService** è un package Laravel progettato per gestire la geolocalizzazione di modelli polimorfici in modo elegante, seguendo i principi SOLID e i design pattern moderni. È ideale per gestionali di flotte, tracciamento utenti o monitoraggio di asset in tempo reale.
-
-* * *
+**GeoService** è un package Laravel per la geolocalizzazione polimorfica avanzata. Permette di tracciare e visualizzare su mappa qualsiasi modello Eloquent (Utenti, Veicoli, Asset) con icone personalizzate e aggiornamenti in tempo reale.
 
 🇮🇹 Italiano
 -------------
 
-### Caratteristiche
+### 🚀 Caratteristiche
 
-*   **Polimorfismo Totale**: Collega la posizione GPS a qualsiasi modello (Utenti, Veicoli, Negozi, ecc.).
-*   **Popup Indipendenti dal Modello**: Ogni modello decide autonomamente cosa mostrare nel popup della mappa tramite un'interfaccia dedicata.
-*   **Refresh Automatico**: Monitoraggio in tempo reale con intervallo di aggiornamento configurabile.
-*   **Architettura Solida**: Utilizzo di Service, DTO e Interfacce per la massima manutenibilità.
-*   **Frontend Reattivo**: Integrazione fluida tra Livewire, Alpine.js e Leaflet.
-
-### Installazione Passo Passo
-
-1.  Aggiungi il package (se locale, definisci il path nel `composer.json` del progetto principale):
+*   **Polimorfismo Nativo**: Collega posizioni GPS a qualsiasi entità del database.
     
-        "repositories": [
-            {
-                "type": "path",
-                "url": "packages/ilbullo/geo-service"
-            }
-        ]
+*   **Icone Marker Dinamiche**: Configura icone diverse per ogni tipo di modello o per singole istanze.
     
-    Poi esegui: `composer require ilbullo/geo-service`
-2.  Pubblica la configurazione: `php artisan vendor:publish --tag=geoservice-config`
-3.  Esegui le migrazioni: `php artisan migrate`
+*   **Popup Personalizzabili**: Ogni modello definisce il proprio HTML per i popup della mappa.
+    
+*   **Real-time Monitoring**: Supporto al polling automatico gestito da configurazione.
+    
+*   **Architettura SOLID**: Utilizzo di DTO, Service e Contract per una manutenibilità superiore.
+    
 
-* * *
+### 🛠 Installazione
+
+1.  JSON"repositories": \[{ "type": "path", "url": "packages/ilbullo/geo-service" }\]
+    
+2.  **Installa**: composer require ilbullo/geo-service
+    
+3.  **Pubblica i file**: php artisan vendor:publish --tag=geoservice-config
+    
+4.  **Migra il DB**: php artisan migrate
+    
+
+### ⚙️ Configurazione Icone e Marker
+
+Dopo la pubblicazione, troverai il file config/geo-service.php. Qui puoi gestire il comportamento visivo del package:
+
+PHP
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   return [      // Intervallo di aggiornamento automatico della mappa (es: '5s', '10s', '1m')      'refresh_interval' => '10s',      // Icona predefinita se non specificata      'default_icon' => [          'url' => '/images/markers/default.png',          'size' => [32, 32],          'anchor' => [16, 32],      ],      // Mapping icone per tipo di modello      'icons' => [          \App\Models\User::class => '/images/markers/user.png',          \App\Models\Vehicle::class => '/images/markers/truck.png',      ],  ];   `
+
+### 📖 Utilizzo
+
+#### 1\. Implementazione nel Modello
+
+Usa i Trait e implementa l'interfaccia GeolocatablePopup:
+
+PHP
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   use IlBullo\GeoService\Traits\HasGeolocation;  use IlBullo\GeoService\Traits\HasGeolocatablePopup;  use IlBullo\GeoService\Contracts\GeolocatablePopup;  class Vehicle extends Model implements GeolocatablePopup {      use HasGeolocation, HasGeolocatablePopup;      public function toMapPopup(): string {          return "**Mezzo:** {$this->plate_number}";      }      // Opzionale: Sovrascrivi l'icona solo per questa specifica istanza      public function getMapIcon(): ?string {          return $this->is_active ? '/icons/moving.png' : '/icons/stopped.png';      }  }   `
+
+#### 2\. Visualizzazione Mappa
+
+Inserisci il componente Livewire passando la collezione di modelli da mostrare:
+
+HTML
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   @livewire('geo-map', ['models' => $vehicles])   `
 
 🇺🇸 English
 ------------
 
-### Features
+### 🚀 Features
 
-*   **Total Polymorphism**: Link GPS positions to any model (Users, Vehicles, Stores, etc.).
-*   **Model-Independent Popups**: Each model autonomously decides what to display in the map popup via a dedicated interface.
-*   **Automatic Refresh**: Real-time monitoring with a configurable update interval.
-*   **Solid Architecture**: Uses Services, DTOs, and Interfaces for maximum maintainability.
-*   **Reactive Frontend**: Seamless integration between Livewire, Alpine.js, and Leaflet.
-
-### Usage Example
-
-    // Implement the interface in your Model
-    class Vehicle extends Model implements GeolocatablePopup {
-        use HasGeolocation, HasGeolocatablePopup;
+*   **Native Polymorphism**: Link GPS positions to any database entity.
     
-        public function toMapPopup(): string {
-            return "<b>Vehicle ID: {$this->id}</b>";
-        }
-    }
+*   **Dynamic Marker Icons**: Configure different icons per model type or per specific instance.
     
-    // In your Blade view
-    @livewire('geo-map', ['models' => $fleet])
+*   **Customizable Popups**: Each model defines its own HTML for map popups.
+    
+*   **Real-time Monitoring**: Automatic polling support managed via configuration.
+    
+*   **SOLID Architecture**: Uses DTOs, Services, and Contracts for top-tier maintainability.
+    
+
+### ⚙️ Icon & Marker Configuration
+
+In config/geo-service.php, you can define how markers appear:
+
+*   **refresh\_interval**: How often the map updates automatically.
+    
+*   **icons**: A mapping array where keys are Model classes and values are icon URLs.
+    
+*   **getMapIcon()**: A method in your Model that can override global settings for granular control.
+    
+
+### 📖 Quick Start
+
+1.  Add HasGeolocation and HasGeolocatablePopup traits to your Model.
+    
+2.  Implement toMapPopup() to define the marker content.
+    
+3.  Place @livewire('geo-map', \['models' => $items\]) in your blade view.
