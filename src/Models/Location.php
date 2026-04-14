@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Location extends Model
 {
-    protected $fillable = ['lat', 'lng', 'provider', 'last_seen_at'];
+
+    protected $fillable = [
+    'lat', 
+    'lng', 
+    'provider', 
+    'geolocatable_id',   
+    'geolocatable_type',  
+    'last_seen_at'
+];
 
     public function geolocatable()
     {
