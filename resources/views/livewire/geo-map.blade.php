@@ -17,6 +17,7 @@
                 // Usiamo i valori passati dal componente Livewire
                 zoom: @js($zoom),
                 center: @js($center),
+                hasInitialBounds: false,
 
                 init() {
                     // Inizializziamo la mappa usando le coordinate della config
@@ -54,15 +55,13 @@
                     });
 
                     // Gestione intelligente della visuale
-                    if (bounds.length > 1) {
-                        // Più utenti: inquadrali tutti
-                        this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: this.zoom });
-                    } else if (bounds.length === 1) {
-                        // Un solo utente: centra su di lui con lo zoom di default
-                        this.map.setView(bounds[0], this.zoom);
-                    } else {
-                        // Nessun utente: torna al centro predefinito dalla config
-                        this.map.setView([this.center.lat, this.center.lng], this.zoom);
+                    if (!this.hasInitialBounds && bounds.length > 0) {
+                        if (bounds.length > 1) {
+                            this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: this.zoom });
+                        } else {
+                            this.map.setView(bounds[0], this.zoom);
+                        }
+                        this.hasInitialBounds = true; // Impedisce il salto continuo della camera
                     }
                 }
             }
