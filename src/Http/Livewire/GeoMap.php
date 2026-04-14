@@ -3,49 +3,38 @@
 namespace IlBullo\GeoService\Http\Livewire;
 
 use Livewire\Component;
-use IlBullo\GeoService\Models\Location;
+use IlBullo\GeoService\Services\MapService;
 
 class GeoMap extends Component
 {
     public $readyToLoad = false;
-    
-    // Questa proprietà conterrà i modelli passati dall'esterno
     public $models = [];
+    public $refreshInterval; 
 
-    public function loadMap()
+    public function mount($models = [])
+    {
+        $this->models = $models;
+        // Recupera il valore dal config, con un fallback di sicurezza
+        $this->refreshInterval = config('geoservice.refresh_interval', '30s');
+    }
+
+    /**
+     * Usiamo il Service iniettato
+     */
+    public function loadMap(MapService $mapService)
     {
         $this->readyToLoad = true;
+            
+        $markers = $mapService->getMarkersForModels($this->models);
+
+        $this->dispatch('map-updated', [
+            'locations' => $markers,
+            'config'    => config('geoservice.default_icon')
+        ]);
     }
 
     public function render()
     {
-        $locations = collect();
-
-        if ($this->readyToLoad) {
-            $query = Location::with('geolocatable');
-
-            // Se sono stati passati dei modelli, filtriamo la mappa
-            if (!empty($this->models)) {
-                $query->where(function($q) {
-                    foreach ($this->models as $model) {
-                        $q->orWhere(function($sub) use ($model) {
-                            $sub->where('geolocatable_type', get_class($model))
-                                ->where('geolocatable_id', $model->id);
-                        });
-                    }
-                });
-            } else {
-                // Se non passiamo nulla, mostriamo tutto come prima
-                $locations = $query->get();
-            }
-            
-            $locations = $query->get();
-        }
-
-        return view('geoservice::livewire.geo-map', [
-            'locations'   => $locations,
-            'icons'       => config('geoservice.icons', []),
-            'defaultIcon' => config('geoservice.default_icon')
-        ]);
+        return view('geoservice::livewire.geo-map');
     }
 }

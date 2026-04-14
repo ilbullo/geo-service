@@ -24,4 +24,6 @@ return [
         'App\Models\User' => 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
         'App\Models\Vehicle' => 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
     ],
+
+    'refresh_interval' => '10s', // Esempio: aggiorna ogni 10 secondi
 ];
